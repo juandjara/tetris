@@ -1,0 +1,16 @@
+.controls > button{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin: 4px;
+}
+
+#tetris_wrapper canvas{
+    margin: 0 auto;
+    display: block;
+}
+
+body{
+    margin:0;
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
