@@ -255,16 +255,11 @@ function tetris(){
     }
     
     function parse_shape(shape_txt){
-        var shape = [];
-        var rows = shape_txt.split(' ');
-        for(var y = 0; y < rows.length; y++){
-            shape[y] = [];
-            var row = rows[y];
-            var elems = row.split('');
-            for(var x = 0; x < elems.length; x++){
-                shape[y][x] = parseInt(elems[x]);
-            }
-        }
+	var shape = shape_txt.split(' ').map(function(row, y){
+	  return row.split('').map(function(elem){
+	    return parseInt(elem);
+	  })
+	});
         return shape;
     }
     
@@ -282,10 +277,21 @@ function tetris(){
         piece.shape = parse_shape(piece_data.shape);
         return piece;
     }
-    
+
+    function forEachBlock(piece, callback){
+      piece.shape.forEach(function(row, rowIndex){
+        row.forEach(function(block, colIndex){
+	  if(block !== 0){
+	    callback(piece, rowIndex, colIndex, row, block);
+	  }
+	});
+      });
+    }
+
     function down_collision(new_pos){
         var collision = 0;
-        for(var row = 0; row < current_piece.shape.length; row++){
+	/*
+	for(var row = 0; row < current_piece.shape.length; row++){
             for(var col = 0; col < current_piece.shape[row].length; col++){
                 if(current_piece.shape[row][col] !== 0){
                     var yindex = new_pos.y + row;
@@ -296,6 +302,18 @@ function tetris(){
                 }
             }
         }
+	*/
+	forEachBlock(current_piece, function(piece, 
+		                             rowIndex, colIndex,
+	                                     row, block){
+	  if(block !== 0){
+            var yindex = new_pos.y + rowIndex;
+            var xindex = new_pos.x + colIndex;
+            if(yindex >= grid.cells.length){
+              collision++; // collsion with ground
+            }
+          }
+	});
         return collision;
     }
     
