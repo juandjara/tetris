@@ -278,78 +278,53 @@ function tetris(){
         return piece;
     }
 
-    function forEachBlock(piece, callback){
-      piece.shape.forEach(function(row, rowIndex){
-        row.forEach(function(block, colIndex){
-	  if(block !== 0){
-	    callback(piece, rowIndex, colIndex, row, block);
-	  }
-	});
+    function for_each_block(piece, callback){
+      piece.shape.forEach(function(row, row_index){
+        row.forEach(function(block, col_index){
+          if(block !== 0){
+	        callback(piece, row_index, col_index, row, block);
+	      }
+	    });
       });
     }
 
     function down_collision(new_pos){
-        var collision = 0;
-	/*
-	for(var row = 0; row < current_piece.shape.length; row++){
-            for(var col = 0; col < current_piece.shape[row].length; col++){
-                if(current_piece.shape[row][col] !== 0){
-                    var yindex = new_pos.y + row;
-                    var xindex = new_pos.x + col;
-                    if(yindex >= grid.cells.length){
-                        collision++; // collsion with ground
-                    }
-                }
-            }
+      var collision = 0;
+      for_each_block(current_piece, function(piece, row_index, col_index){
+        var yindex = new_pos.y + row_index;
+        var xindex = new_pos.x + col_index;
+        if(yindex >= grid.cells.length){
+          collision++; // collsion with ground
         }
-	*/
-	forEachBlock(current_piece, function(piece, 
-		                             rowIndex, colIndex,
-	                                     row, block){
-	  if(block !== 0){
-            var yindex = new_pos.y + rowIndex;
-            var xindex = new_pos.x + colIndex;
-            if(yindex >= grid.cells.length){
-              collision++; // collsion with ground
-            }
-          }
-	});
-        return collision;
+	  });
+      return collision;
     }
     
     function tile_collision(new_pos){
-        var collision = 0;
-        for(var row = 0; row < current_piece.shape.length; row++){
-            for(var col = 0; col < current_piece.shape[row].length; col++){
-                if(current_piece.shape[row][col] !== 0){
-                    var yindex = new_pos.y + row;
-                    var xindex = new_pos.x + col;
-                    if(grid.cells[yindex] && 
-                        typeof(grid.cells[yindex][xindex]) === 'number' && 
-                        grid.cells[yindex][xindex] !== 0)
-                    {
-                        collision++; // collision with other tiles
-                    }
-                }
-            }
+      var collision = 0;
+      for_each_block(current_piece, function(piece, row_index, block_index){
+        var yindex = new_pos.y + row_index;
+        var xindex = new_pos.x + block_index;
+        if(grid.cells[yindex] && 
+           typeof(grid.cells[yindex][xindex]) === 'number' && 
+           grid.cells[yindex][xindex] !== 0)
+        {
+          collision++; // collision with other tiles
         }
-        return collision;
+      });
+      return collision;
     }
     
-    function side_collision(new_pos){
-        var collision = false;
-        for(var row = 0; row < current_piece.shape.length; row++){
-            for(var col = 0; col < current_piece.shape[row].length; col++){
-                if(current_piece.shape[row][col] !== 0){
-                    var yindex = new_pos.y + row;
-                    var xindex = new_pos.x + col;
-                    if(xindex < 0 || xindex >= grid.cells[0].length){
-                        collision = true; // collision with sides
-                    }
-                }
-            }
+    function side_collision(new_pos){ 
+      var collision = false;
+      for_each_block(current_piece, function(piece, row_index, col_index){
+        var yindex = new_pos.y + row_index;
+        var xindex = new_pos.x + col_index;
+        if(xindex < 0 || xindex >= grid.cells[0].length){
+          collision = true; // collision with sides
         }
-        return collision;
+      });
+      return collision;
     }
     
     function check_lines(){
@@ -372,7 +347,6 @@ function tetris(){
             if(lines === max_lines){
                 on_clear_level();
                 level_clear = true;
-                
             }
         }
         lines_txt.text = 'Lines: '+lines+'/'+max_lines;
